@@ -2,30 +2,34 @@ import numpy as np
 import torch
 
 class Model():
-    def __init__(self,data):
+    def __init__(self,data,path):
         self.data = data
-    
-    def build_model1(self,x):
-        result = -0.156+0.054*x[1]-0.006*x[1]**2+2.059*x[4]-0.813*x[1]*x[4]+0.088*(x[1]**2)*x[4]
-        result += 0.049*x[7]+0.047*x[8]+0.067*x[9]+0.132*x[10]
-        result += 0.046*x[11]+0.029*x[12]+0.013*x[13]+0.024*x[14]+0.03*x[15]+0.043*x[16]+0.052*x[17]+0.056*x[18]+0.052*x[18]+0.042*x[19]
-        result += 0.003*x[2]-0.024*x[3]+0.012*x[6]
+        self.parameters_model1 = np.array(list(np.load(path, allow_pickle=True).item()['model1'].values()))
+
+        self.parameters_model2 = np.array(list(np.load(path, allow_pickle=True).item()['model2'].values()))
+    def build_model1(self,x,p):
+
+
+        result = p[0]+p[1]*x[1]+p[2]*x[1]**p[3]+p[4]*x[4]+p[5]*x[1]*x[4]+p[6]*(x[1]**p[7])*x[4]
+        result += p[8]*x[7]+p[9]*x[8]+p[10]*x[9]+p[11]*x[10]
+        result += p[12]*x[11]+p[13]*x[12]+p[14]*x[13]+p[15]*x[14]+p[16]*x[15]+p[17]*x[16]+p[18]*x[17]+p[19]*x[18]+p[20]*x[18]+p[21]*x[19]
+        result += p[22]*x[2]+p[23]*x[3]+p[24]*x[6]
         return np.exp(result)-1
 
-    def build_model2(self,x):
-        result = 1.392-0.679*x[1]+0.075*x[1]**2-1.803*x[5]+0.496*x[1]*x[5]-0.057*(x[1]**2)*x[5]
-        result += 0.044*x[7]+0.02*x[8]+0.032*x[9]+0.118*x[10]
-        result += 0.047*x[11]+0.03*x[12]+0.012*x[13]+0.027*x[14]+0.039*x[15]+0.049*x[16]+0.053*x[17]+0.05*x[18]+0.038*x[18]+0.03*x[19]
-        result += 0.009*x[2]-0.023*x[3]+0.502*x[6]
+    def build_model2(self,x,p):
+        result = p[0]+p[1]*x[1]+p[2]*x[1]**p[3]+p[4]*x[4]+p[5]*x[1]*x[4]+p[6]*(x[1]**p[7])*x[4]
+        result += p[8]*x[7]+p[9]*x[8]+p[10]*x[9]+p[11]*x[10]
+        result += p[12]*x[11]+p[13]*x[12]+p[14]*x[13]+p[15]*x[14]+p[16]*x[15]+p[17]*x[16]+p[18]*x[17]+p[19]*x[18]+p[20]*x[18]+p[21]*x[19]
+        result += p[22]*x[2]+p[23]*x[3]+p[24]*x[6]
         return np.exp(result)-1
     
     def forward(self,modeltype):
         ress = []
         if(modeltype==1):
             for e in self.data:
-                ress.append(self.build_model1(e))
+                ress.append(self.build_model1(e,self.parameters_model1))
         else:
             for e in self.data:
-                ress.append(self.build_model2(e))
+                ress.append(self.build_model2(e,self.parameters_model2))
         return np.array(ress)
         
